@@ -78,6 +78,7 @@ bool OverPatch::LaunchAndPatch(std::string filePath)
     uintptr_t pJneCodeAddr = (uintptr_t)modInfo.lpBaseOfDll + pJneCodeRVA;
     uintptr_t pCurlAddr = (uintptr_t)modInfo.lpBaseOfDll + pCurlRVA;
 
+    bool waitPrint1 = false;
     while (true)
     {
         if (IsMemoryAvailable(pi.hProcess, pPinAddr, (void*)&pinSignature, sizeof(pinSignature)) &&
@@ -88,7 +89,10 @@ bool OverPatch::LaunchAndPatch(std::string filePath)
             break;
         }
 
-        std::cout << "Waiting for unpacking (region1) to finish..\n";
+        if (!waitPrint1) {
+            std::cout << "Waiting for unpacking (region1) to finish..\n";
+            waitPrint1 = true;
+        }
 
         Sleep(50);
     }
@@ -107,6 +111,7 @@ bool OverPatch::LaunchAndPatch(std::string filePath)
 
     std::cout << "Patch 1 applied!" << std::endl;
 
+    bool waitPrint2 = false;
     while (true)
     {
         if (IsMemoryAvailable(pi.hProcess, pCurlAddr, (void*)&curlSslSignature, sizeof(curlSslSignature)))
@@ -115,7 +120,10 @@ bool OverPatch::LaunchAndPatch(std::string filePath)
             break;
         }
 
-        std::cout << "Waiting for unpacking (region2) to finish..\n";
+        if (!waitPrint2) {
+            std::cout << "Waiting for unpacking (region2) to finish..\n";
+            waitPrint2 = true;
+        }
 
         Sleep(50);
     }
